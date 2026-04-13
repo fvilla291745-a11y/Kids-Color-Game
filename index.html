@@ -91,6 +91,26 @@
             color: white;
         }
 
+        #yellowBtn {
+            background-color: yellow;
+            color: black;
+        }
+
+        #orangeBtn {
+            background-color: orange;
+            color: white;
+        }
+
+        #purpleBtn {
+            background-color: purple;
+            color: white;
+        }
+
+        #pinkBtn {
+            background-color: hotpink;
+            color: white;
+        }
+
         .selected {
             box-shadow: 0 0 0 4px #222;
             transform: scale(1.08);
@@ -261,6 +281,32 @@
             color: #42ce53;
             margin-top: 20px;
         }
+
+        select {
+            font-size: 18px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .correct {
+            animation: pop 0.2s ease;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.12);
+            }
+
+            100% {
+                transform: scale(1.08);
+            }
+        }
     </style>
 </head>
 
@@ -272,6 +318,13 @@
             </div>
 
             <p class="subtitle">Tap, Learn, and Play!</p>
+
+            <p class="subtitle">Choose a difficulty:</p>
+            <select id="difficultySelect">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
 
             <div class="menu-buttons">
                 <button onclick="startGame('learning')">🎨 Learning Mode</button>
@@ -287,28 +340,28 @@
                 <h1>How to Play</h1>
             </div>
 
-            <p class="subtitle">Simple steps to get started</p>
-
+            <p class="subtitle">🎮 How the Game Works</p>
             <ul class="instructions-list">
-                <li>👀 Look at the color word on the screen</li>
-                <li>👉 Tap the matching color button</li>
-                <li>✅ Get it right to earn points</li>
+                <li>👀 Read the color word on screen</li>
+                <li>🎯 Tap the matching color button</li>
+                <li>⚡ Be quick and accurate!</li>
             </ul>
-            
+
             <p class="subtitle">🎨 Learning Mode</p>
             <ul class="instructions-list">
-                <li>No pressure — practice as much as you want</li>
-                <li>Earn ⭐ stars every 50 correct answers</li>
+                <li>No time limit — play at your own pace</li>
+                <li>Practice and improve your skills</li>
+                <li>Earn ⭐ stars every 50 points</li>
             </ul>
-            
+
             <p class="subtitle">⭐ Arcade Mode</p>
             <ul class="instructions-list">
                 <li>You have ❤️ 3 lives</li>
-                <li>Wrong answers lose a life</li>
-                <li>Try to beat your high score</li>
-                <li>Earn rewards at higher scores</li>
+                <li>⏱️ You must answer before time runs out</li>
+                <li>🚀 Game gets faster as you level up</li>
+                <li>🏆 Beat your high score</li>
             </ul>
-            
+
             <p>🎉 Have fun and keep improving!</p>
 
             <button onclick="goToMenu()">Back to Menu</button>
@@ -318,6 +371,12 @@
     <div id="gameScreen" class="screen" style="display: none;">
         <div class="game-card">
             <div class="top-bar">
+                <div id="arcadeInfoBar" style="display: none; margin-bottom: 20px;">
+                    <div style="font-size: 22px; font-weight: bold; color: #333;">
+                        Time Left: <span id="timerDisplay">3.0</span>s
+                    </div>
+                    <button id="startRoundBtn" onclick="beginArcadeRound()">Start Round</button>
+                </div>
                 <div>Mode: <span id="modeDisplay">Learning</span></div>
                 <div id="livesDisplay">❤️ ❤️ ❤️</div>
             </div>
@@ -331,12 +390,17 @@
                 <button id="blueBtn" onclick="checkAnswer('blue', this)">Blue</button>
                 <button id="redBtn" onclick="checkAnswer('red', this)">Red</button>
                 <button id="greenBtn" onclick="checkAnswer('green', this)">Green</button>
+                <button id="yellowBtn" onclick="checkAnswer('yellow', this)">Yellow</button>
+                <button id="orangeBtn" onclick="checkAnswer('orange', this)">Orange</button>
+                <button id="purpleBtn" onclick="checkAnswer('purple', this)">Purple</button>
+                <button id="pinkBtn" onclick="checkAnswer('pink', this)">Pink</button>
             </div>
 
 
             <div id="scoreArea">
                 <span>Score: <span id="score">0</span></span>
-                <span id="highScoreContainer"> | High Score: <span id="highScore">0</span></span>
+                <span id="highScoreContainer"> | High Score (<span id="difficultyLabel">Easy</span>): <span
+                        id="highScore">0</span></span>
             </div>
 
             <div id="learningStarsArea">
@@ -369,15 +433,47 @@
     <script>
         let correctColor = "red";
         let score = 0;
-        let arcadeHighScore = localStorage.getItem("arcadeHighScore") || 0;
+        let arcadeHighScore = 0;
+        let roundStarted = false;
         let lives = 3;
         let gameMode = "learning";
         let gameActive = false;
         let earnedRewards = [];
         let questionLocked = false;
+        let difficulty = "easy";
         let learningStars = 0;
+        let colors = ["red", "blue", "green"];
+        let timer;
+        let timeLeft = 3;
+        let level = 1;
 
-        const colors = ["red", "blue", "green"];
+        function updateDifficulty() {
+            difficulty = document.getElementById("difficultySelect").value;
+
+            if (difficulty === "easy") {
+                colors = ["red", "blue", "green"];
+            } else if (difficulty === "medium") {
+                colors = ["red", "blue", "green", "yellow", "orange"];
+            } else {
+                colors = ["red", "blue", "green", "yellow", "orange", "purple", "pink"];
+            }
+
+            updateVisibleButtons();
+        }
+
+        function updateVisibleButtons() {
+            const allButtons = document.querySelectorAll(".button-container button");
+
+            allButtons.forEach(button => {
+                const colorName = button.textContent.toLowerCase();
+
+                if (colors.includes(colorName)) {
+                    button.style.display = "inline-block";
+                } else {
+                    button.style.display = "none";
+                }
+            });
+        }
 
         function setRandomQuestion() {
             const randomIndex = Math.floor(Math.random() * colors.length);
@@ -385,6 +481,32 @@
 
             const question = document.getElementById("question");
             question.innerHTML = `Tap <strong>${correctColor}</strong>`;
+        }
+
+        function handleWrongAnswer() {
+            clearInterval(timer);
+
+            if (gameMode === "arcade") {
+                lives--;
+                updateLivesDisplay();
+
+                if (lives <= 0) {
+                    gameActive = false;
+                    roundStarted = false;
+                    setTimeout(() => showGameOverScreen(), 500);
+                } else {
+                    setTimeout(() => {
+                        clearButtonStyles();
+                        setRandomQuestion();
+                        document.getElementById("message").textContent = "";
+                        questionLocked = true;
+                        roundStarted = false;
+                        document.getElementById("startRoundBtn").style.display = "inline-block";
+                    }, 450);
+                }
+            } else {
+                questionLocked = false;
+            }
         }
 
         function clearButtonStyles() {
@@ -447,6 +569,17 @@
             gameActive = true;
             earnedRewards = [];
             questionLocked = false;
+            level = 1;
+            roundStarted = false;
+            clearInterval(timer);
+
+            updateDifficulty();
+            document.getElementById("difficultyLabel").textContent =
+                difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+
+            if (mode === "arcade") {
+                loadArcadeHighScore();
+            }
 
             document.getElementById("menuScreen").style.display = "none";
             document.getElementById("instructionsScreen").style.display = "none";
@@ -471,13 +604,23 @@
             // Always reset first
             highScoreContainer.style.display = "none";
 
+            const arcadeInfoBar = document.getElementById("arcadeInfoBar");
+            const startRoundBtn = document.getElementById("startRoundBtn");
+            const timerDisplay = document.getElementById("timerDisplay");
+
             if (gameMode === "arcade") {
                 document.getElementById("highScore").textContent = arcadeHighScore;
                 highScoreContainer.style.display = "inline";
                 learningStarsArea.style.display = "none";
+
+                arcadeInfoBar.style.display = "block";
+                startRoundBtn.style.display = "inline-block";
+                timerDisplay.textContent = "3.0";
             } else {
                 highScoreContainer.style.display = "none";
                 learningStarsArea.style.display = "block";
+
+                arcadeInfoBar.style.display = "none";
             }
 
             document.getElementById("message").textContent = "";
@@ -499,7 +642,10 @@
         }
 
         function checkAnswer(color, buttonElement) {
+
             if (!gameActive || questionLocked) return;
+
+            id(gameMode === "arcade" && !roundStarted) return;
 
             const message = document.getElementById("message");
 
@@ -508,6 +654,8 @@
             questionLocked = true;
 
             if (color === correctColor) {
+                clearInterval(timer);
+
                 score++;
                 document.getElementById("score").textContent = score;
                 checkRewards();
@@ -515,7 +663,7 @@
                 if (gameMode === "arcade") {
                     if (score > arcadeHighScore) {
                         arcadeHighScore = score;
-                        localStorage.setItem("arcadeHighScore", arcadeHighScore);
+                        localStorage.setItem(getArcadeHighScoreKey(), arcadeHighScore);
                         document.getElementById("highScore").textContent = arcadeHighScore;
                     }
                 }
@@ -524,13 +672,19 @@
                 message.textContent = "Correct! Great job!";
 
                 if (gameMode === "arcade") {
+                    level = Math.floor(score / 5) + 1;
+                }
+
+                if (gameMode === "arcade") {
                     setTimeout(() => {
                         if (!gameActive) return;
                         clearButtonStyles();
                         setRandomQuestion();
                         message.textContent = "";
-                        questionLocked = false;
-                    }, 250);
+                        questionLocked = true;
+                        roundStarted = false;
+                        document.getElementById("startRoundBtn").style.display = "inline-block";
+                    }, 450);
                 } else {
                     setTimeout(() => {
                         if (!gameActive) return;
@@ -542,23 +696,16 @@
                 }
 
             } else {
+                clearInterval(timer);
                 buttonElement.classList.add("wrong");
 
                 if (gameMode === "arcade") {
-                    lives--;
-                    updateLivesDisplay();
+                    message.textContent = "Wrong!";
+                    questionLocked = true;
 
-                    if (lives <= 0) {
-                        gameActive = false;
-                        message.textContent = "Game Over!";
-
-                        setTimeout(() => {
-                            showGameOverScreen();
-                        }, 800);
-                    } else {
-                        message.textContent = "Wrong! Try again!";
-                        questionLocked = false;
-                    }
+                    setTimeout(() => {
+                        handleWrongAnswer();
+                    }, 450);
                 } else {
                     message.textContent = "Try again!";
                     questionLocked = false;
@@ -595,6 +742,42 @@
             document.getElementById("menuScreen").style.display = "none";
             document.getElementById("instructionsScreen").style.display = "block";
             document.getElementById("gameOverScreen").style.display = "none";
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+
+            timeLeft = Math.max(1.5, 3 - ((level - 1) * 0.15));
+            document.getElementById("timerDisplay").textContent = timeLeft.toFixed(1);
+
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                document.getElementById("timerDisplay").textContent = Math.max(0, timeLeft).toFixed(1);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("message").textContent = "Time's up!";
+                    handleWrongAnswer();
+                }
+            }, 100);
+        }
+
+        function getArcadeHighScoreKey() {
+            return 'arcadeHighScore_${difficulty}';
+        }
+        function loadArcadeHighScore() {
+            arcadeHighScore = Number(localStorage.getItem(getArcadeHighScoreKey())) || 0;
+        }
+
+        function beginArcadeRound() {
+            if (gameMode !== "arcade" || !gameActive) return;
+
+            roundStarted = true;
+            questionLocked = false;
+            document.getElementById("message").textContent = "";
+            document.getElementById("statRoundBtn").style.display = "none";
+
+            startTimer();
         }
     </script>
 </body>
