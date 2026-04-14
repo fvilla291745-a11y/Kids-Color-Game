@@ -371,13 +371,10 @@
     <div id="gameScreen" class="screen" style="display: none;">
         <div class="game-card">
             <div class="top-bar">
-                <div id="arcadeInfoBar" style="display: none; margin-bottom: 20px;">
-                    <div style="font-size: 22px; font-weight: bold; color: #333;">
-                        Time Left: <span id="timerDisplay">3.0</span>s
-                    </div>
-                    <button id="startRoundBtn" onclick="beginArcadeRound()">Start Round</button>
-                </div>
                 <div>Mode: <span id="modeDisplay">Learning</span></div>
+                <div id="timerWrapper" style="display: none;">
+                    ⏱️ <span id="timerDisplay">5.0</span>s
+                </div>
                 <div id="livesDisplay">❤️ ❤️ ❤️</div>
             </div>
 
@@ -401,6 +398,10 @@
                 <span>Score: <span id="score">0</span></span>
                 <span id="highScoreContainer"> | High Score (<span id="difficultyLabel">Easy</span>): <span
                         id="highScore">0</span></span>
+            </div>
+
+            <div id="startRoundArea" style="display: none; margin-top: 18px;">
+                <button id="startRoundBtn" onclick="beginArcadeRound()">Start Round</button>
             </div>
 
             <div id="learningStarsArea">
@@ -499,9 +500,11 @@
                         clearButtonStyles();
                         setRandomQuestion();
                         document.getElementById("message").textContent = "";
-                        questionLocked = true;
-                        roundStarted = false;
-                        document.getElementById("startRoundBtn").style.display = "inline-block";
+                        questionLocked = false;
+
+                        if (gameMode === "arcade" && roundStarted) {
+                            startTimer();
+                        }
                     }, 450);
                 }
             } else {
@@ -604,7 +607,8 @@
             // Always reset first
             highScoreContainer.style.display = "none";
 
-            const arcadeInfoBar = document.getElementById("arcadeInfoBar");
+            const timerWrapper = document.getElementById("timerWrapper");
+            const startRoundArea = document.getElementById("startRoundArea");
             const startRoundBtn = document.getElementById("startRoundBtn");
             const timerDisplay = document.getElementById("timerDisplay");
 
@@ -613,14 +617,16 @@
                 highScoreContainer.style.display = "inline";
                 learningStarsArea.style.display = "none";
 
-                arcadeInfoBar.style.display = "block";
+                timerWrapper.style.display = "block";
+                startRoundArea.style.display = "block";
                 startRoundBtn.style.display = "inline-block";
-                timerDisplay.textContent = "3.0";
+                timerDisplay.textContent = score < 20 ? "5.0" : "3.0";
             } else {
                 highScoreContainer.style.display = "none";
                 learningStarsArea.style.display = "block";
 
-                arcadeInfoBar.style.display = "none";
+                timerWrapper.style.display = "none";
+                startRoundArea.style.display = "none";
             }
 
             document.getElementById("message").textContent = "";
@@ -639,13 +645,17 @@
             }
 
             setRandomQuestion();
+
+            if (gameMode === "arcade") {
+                questionLocked = true;
+            }
         }
 
         function checkAnswer(color, buttonElement) {
 
             if (!gameActive || questionLocked) return;
 
-            id(gameMode === "arcade" && !roundStarted) return;
+            if (gameMode === "arcade" && !roundStarted) return;
 
             const message = document.getElementById("message");
 
@@ -681,9 +691,11 @@
                         clearButtonStyles();
                         setRandomQuestion();
                         message.textContent = "";
-                        questionLocked = true;
-                        roundStarted = false;
-                        document.getElementById("startRoundBtn").style.display = "inline-block";
+                        questionLocked = false;
+
+                        if (gameMode === "arcade" && roundStarted) {
+                            startTimer();
+                        }
                     }, 450);
                 } else {
                     setTimeout(() => {
@@ -730,11 +742,15 @@
 
         function goToMenu() {
             gameActive = false;
+            clearInterval(timer);
+            roundStarted = false;
             document.getElementById("menuScreen").style.display = "block";
             document.getElementById("instructionsScreen").style.display = "none";
             document.getElementById("gameScreen").style.display = "none";
             document.getElementById("gameOverScreen").style.display = "none";
             document.getElementById("message").textContent = "";
+            document.getElementById("startRoundArea").style.display = "none";
+            document.getElementById("timerWrapper").style.display = "none";
             clearButtonStyles();
         }
 
@@ -747,7 +763,14 @@
         function startTimer() {
             clearInterval(timer);
 
-            timeLeft = Math.max(1.5, 3 - ((level - 1) * 0.15));
+            // 👇 Dynamic timer based on score
+            if (score < 20) {
+                timeLeft = 5;
+            } else {
+                // starts at 3 seconds, then gets faster
+                timeLeft = Math.max(1.5, 3 - ((score - 20) * 0.05));
+            }
+
             document.getElementById("timerDisplay").textContent = timeLeft.toFixed(1);
 
             timer = setInterval(() => {
@@ -763,7 +786,7 @@
         }
 
         function getArcadeHighScoreKey() {
-            return 'arcadeHighScore_${difficulty}';
+            return `arcadeHighScore_${difficulty}`;
         }
         function loadArcadeHighScore() {
             arcadeHighScore = Number(localStorage.getItem(getArcadeHighScoreKey())) || 0;
@@ -775,7 +798,7 @@
             roundStarted = true;
             questionLocked = false;
             document.getElementById("message").textContent = "";
-            document.getElementById("statRoundBtn").style.display = "none";
+            document.getElementById("startRoundBtn").style.display = "none";
 
             startTimer();
         }
