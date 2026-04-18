@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kids Color Game</title>
+
+    <style>
+        :root {
+            --primary-green: #8D6E63;
+            --secondary-green: #A1887F;
+            --accent-yellow: #D7CCC8;
+
+            --app-bg: #FBFAF8;
+            --panel-bg: #F3ECE7;
+            --page-bg: #E6DAD1;
+
+            --text-dark: #3E2723;
+            --text-muted: #6D4C41;
+
+            --border-color: #BCAAA4;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--page-bg);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .screen {
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #444;
+        }
+
+        button {
+            padding: 15px 25px;
+            margin: 6px;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        select {
+            font-size: 18px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+            margin-bottom: 0;
+            box-sizing: border-box;
+        }
+
+        .menu-buttons button,
+        .game-over-buttons button {
+            background-color: #333;
+            color: white;
+        }
+
+        .menu-buttons,
+        .game-over-buttons {
+            margin-top: 20px;
+        }
+
+        #question {
+            background: white;
+            max-width: 500px;
+            margin: 0 auto 25px auto;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            font-size: 30px;
+            color: #222;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        #blueBtn {
+            background-color: blue;
+            color: white;
+        }
+
+        #redBtn {
+            background-color: red;
+            color: white;
+        }
+
+        #greenBtn {
+            background-color: green;
+            color: white;
+        }
+
+        #yellowBtn {
+            background-color: yellow;
+            color: black;
+        }
+
+        #orangeBtn {
+            background-color: orange;
+            color: white;
+        }
+
+        #purpleBtn {
+            background-color: purple;
+            color: white;
+        }
+
+        #pinkBtn {
+            background-color: hotpink;
+            color: white;
+        }
+
+        .selected {
+            box-shadow: 0 0 0 4px #222;
+            transform: scale(1.08);
+        }
+
+        .correct {
+            box-shadow: 0 0 0 4px limegreen;
+            animation: pop 0.2s ease;
+        }
+
+        .wrong {
+            box-shadow: 0 0 0 4px crimson;
+            opacity: 0.9;
+        }
+
+        #scoreArea {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            min-height: 32px;
+        }
+
+        #gameOverScreen h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        #finalScore {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .title-card {
+            background: white;
+            max-width: 500px;
+            margin: 0 auto 20px auto;
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .title-card h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .top-bar {
+            background: white;
+            max-width: 700px;
+            margin: 0 auto 25px auto;
+            padding: 15px 20px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .game-card {
+            background: #fff8ef;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+        }
+
+        .game-over-card {
+            background: #fff8ef;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+        }
+
+        .menu-card,
+        .instructions-card {
+            background: #fff8ef;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 28px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+        }
+
+        .instructions-list {
+            text-align: left;
+            max-width: 500px;
+            margin: 20px auto;
+            color: #444;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .instructions-list li {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        #rewardMessage {
+            margin-top: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .reward-bronze {
+            color: #cd7f32;
+        }
+
+        .reward-silver {
+            color: #c0c0c0;
+        }
+
+        .reward-gold {
+            color: #d4af37;
+        }
+
+        .menu-buttons button {
+            display: block;
+            width: 260px;
+            margin: 14px auto;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 18px;
+            padding: 18px 20px;
+        }
+
+        .menu-card .subtitle {
+            font-size: 24px;
+            font-weight: bold;
+            color: #51c94b;
+            margin-bottom: 20px;
+        }
+
+        #learningStarsArea {
+            font-size: 22px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-top: 12px;
+            text-align: left;
+            max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .instructions-card .subtitle {
+            font-size: 22px;
+            font-weight: bold;
+            color: #42ce53;
+            margin-top: 20px;
+        }
+
+        /* Menu screen */
+        #menuScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 320px;
+            min-height: 640px;
+            background: var(--app-bg);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        .top-box {
+            background: var(--panel-bg);
+            border: 3px solid var(--border-color);
+            border-radius: 18px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .game-title {
+            margin: 0 0 6px 0;
+            font-size: 36px;
+            color: var(--text-dark);
+            line-height: 1.05;
+        }
+
+        .tagline {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .difficulty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 260px;
+            margin: 10px auto 0 auto;
+            gap: 10px;
+        }
+
+        .difficulty-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .difficulty-select {
+            width: 120px;
+            padding: 6px 10px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .main-btn {
+            display: block;
+            width: 260px;
+            padding: 18px;
+            font-size: 18px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary-green);
+            color: white;
+            cursor: pointer;
+            box-sizing: border-box;
+            text-align: center;
+            margin: 0;
+        }
+
+        .main-btn.arcade {
+            background: var(--secondary-green);
+        }
+
+        .main-btn.howto {
+            background: var(--accent-yellow);
+            color: var(--text-dark);
+            font-size: 16px;
+        }
+
+        .main-btn,
+        .icon-btn {
+            margin: 0;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .icon-btn {
+            width: 52px;
+            height: 52px;
+            font-size: 22px;
+            border-radius: 50%;
+            border: none;
+            background: var(--border-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.12);
+            }
+
+            100% {
+                transform: scale(1.08);
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .screen {
+                padding: 12px;
+            }
+
+            .app {
+                max-width: 360px;
+                min-height: auto;
+                padding: 14px;
+            }
+
+            .top-box {
+                padding: 12px;
+            }
+
+            .game-title {
+                font-size: 28px;
+            }
+
+            .tagline {
+                font-size: 13px;
+            }
+
+            .difficulty-row {
+                max-width: 250px;
+                gap: 8px;
+            }
+
+            .difficulty-label {
+                font-size: 13px;
+            }
+
+            .difficulty-select {
+                width: 110px;
+                font-size: 13px;
+                padding: 6px 8px;
+            }
+
+            .main-btn {
+                width: 100%;
+                max-width: 260px;
+                font-size: 17px;
+                padding: 16px;
+            }
+
+            .icon-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+
+            .game-card,
+            .instructions-card,
+            .game-over-card {
+                width: 100%;
+                padding: 16px;
+                border-radius: 18px;
+                box-sizing: border-box;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+                font-size: 18px;
+                padding: 14px;
+            }
+
+            .title-card {
+                padding: 14px;
+                margin-bottom: 16px;
+            }
+
+            .title-card h1 {
+                font-size: 28px;
+            }
+
+            #question {
+                font-size: 24px;
+                padding: 14px;
+            }
+
+            .button-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .button-container button {
+                width: calc(50% - 10px);
+                min-width: 120px;
+                margin: 0;
+                font-size: 16px;
+                padding: 14px 10px;
+            }
+
+            #scoreArea,
+            #message,
+            #rewardMessage,
+            #learningStarsArea {
+                font-size: 18px;
+            }
+
+            .instructions-list {
+                font-size: 16px;
+                padding-left: 20px;
+            }
+
+            #gameOverScreen h1 {
+                font-size: 32px;
+            }
+
+            #finalScore,
+            #bestScoreText {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="menuScreen" class="screen">
+        <div class="app">
+            <div class="top-box">
+                <h1 class="game-title">Kids Tap Game</h1>
+                <p class="tagline">Tap, Learn, and Play</p>
+
+                <div class="difficulty-row">
+                    <span class="difficulty-label">Select Difficulty</span>
+                    <select id="difficultySelect" class="difficulty-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="main">
+                <button class="main-btn" onclick="startGame('learning')">Learning Mode</button>
+                <button class="main-btn arcade" onclick="startGame('arcade')">Arcade Mode</button>
+                <button class="main-btn howto" onclick="showInstructions()">How to Play</button>
+            </div>
+
+            <div class="bottom-nav">
+                <button class="icon-btn">⚙️</button>
+                <button class="icon-btn">🖍️</button>
+                <button class="icon-btn">🏆</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="instructionsScreen" class="screen" style="display: none;">
+        <div class="instructions-card">
+            <div class="title-card">
+                <h1>How to Play</h1>
+            </div>
+
+            <p class="subtitle">🎮 How the Game Works</p>
+            <ul class="instructions-list">
+                <li>👀 Read the color word on screen</li>
+                <li>🎯 Tap the matching color button</li>
+                <li>⚡ Be quick and accurate!</li>
+            </ul>
+
+            <p class="subtitle">🎨 Learning Mode</p>
+            <ul class="instructions-list">
+                <li>No time limit — play at your own pace</li>
+                <li>Practice and improve your skills</li>
+                <li>Earn ⭐ stars every 50 points</li>
+            </ul>
+
+            <p class="subtitle">⭐ Arcade Mode</p>
+            <ul class="instructions-list">
+                <li>You have ❤️ 3 lives</li>
+                <li>⏱️ You must answer before time runs out</li>
+                <li>🚀 Game gets faster as you level up</li>
+                <li>🏆 Beat your high score</li>
+            </ul>
+
+            <p>🎉 Have fun and keep improving!</p>
+
+            <button onclick="goToMenu()">Back to Menu</button>
+        </div>
+    </div>
+
+    <div id="gameScreen" class="screen" style="display: none;">
+        <div class="game-card">
+            <div class="top-bar">
+                <div>Mode: <span id="modeDisplay">Learning</span></div>
+                <div id="timerWrapper" style="display: none;">
+                    ⏱️ <span id="timerDisplay">5.0</span>s
+                </div>
+                <div id="livesDisplay">❤️ ❤️ ❤️</div>
+            </div>
+
+            <div class="title-card">
+                <h1>Tap the Right Color</h1>
+            </div>
+            <p id="question">Tap <strong>Red</strong></p>
+
+            <div class="button-container">
+                <button id="blueBtn" onclick="checkAnswer('blue', this)">Blue</button>
+                <button id="redBtn" onclick="checkAnswer('red', this)">Red</button>
+                <button id="greenBtn" onclick="checkAnswer('green', this)">Green</button>
+                <button id="yellowBtn" onclick="checkAnswer('yellow', this)">Yellow</button>
+                <button id="orangeBtn" onclick="checkAnswer('orange', this)">Orange</button>
+                <button id="purpleBtn" onclick="checkAnswer('purple', this)">Purple</button>
+                <button id="pinkBtn" onclick="checkAnswer('pink', this)">Pink</button>
+            </div>
+
+            <div id="scoreArea">
+                <span>Score: <span id="score">0</span></span>
+                <span id="highScoreContainer"> | High Score (<span id="difficultyLabel">Easy</span>): <span
+                        id="highScore">0</span></span>
+            </div>
+
+            <div id="startRoundArea" style="display: none; margin-top: 18px;">
+                <button id="startRoundBtn" onclick="beginArcadeRound()">Start Round</button>
+            </div>
+
+            <div id="learningStarsArea">
+                Stars: <span id="learningStars">0</span> ⭐
+            </div>
+
+            <p id="message"></p>
+            <p id="rewardMessage"></p>
+
+            <button onclick="goToMenu()">Back to Menu</button>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen" style="display: none;">
+        <div class="game-over-card">
+            <div class="title-card">
+                <h1>Game Over</h1>
+            </div>
+
+            <p id="finalScore">Final Score: 0</p>
+            <p id="bestScoreText">Best Score: 0</p>
+
+            <div class="game-over-buttons">
+                <button onclick="restartSameMode()">Play Again</button>
+                <button onclick="goToMenu()">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let correctColor = "red";
+        let score = 0;
+        let arcadeHighScore = 0;
+        let roundStarted = false;
+        let lives = 3;
+        let gameMode = "learning";
+        let gameActive = false;
+        let earnedRewards = [];
+        let questionLocked = false;
+        let difficulty = "easy";
+        let learningStars = 0;
+        let colors = ["red", "blue", "green"];
+        let timer;
+        let timeLeft = 3;
+        let level = 1;
+
+        function updateDifficulty() {
+            difficulty = document.getElementById("difficultySelect").value;
+
+            if (difficulty === "easy") {
+                colors = ["red", "blue", "green"];
+            } else if (difficulty === "medium") {
+                colors = ["red", "blue", "green", "yellow", "orange"];
+            } else {
+                colors = ["red", "blue", "green", "yellow", "orange", "purple", "pink"];
+            }
+
+            updateVisibleButtons();
+        }
+
+        function updateVisibleButtons() {
+            const allButtons = document.querySelectorAll(".button-container button");
+
+            allButtons.forEach(button => {
+                const colorName = button.textContent.toLowerCase();
+
+                if (colors.includes(colorName)) {
+                    button.style.display = "inline-block";
+                } else {
+                    button.style.display = "none";
+                }
+            });
+        }
+
+        function setRandomQuestion() {
+            const randomIndex = Math.floor(Math.random() * colors.length);
+            correctColor = colors[randomIndex];
+
+            const question = document.getElementById("question");
+            question.innerHTML = `Tap <strong>${correctColor}</strong>`;
+        }
+
+        function handleWrongAnswer() {
+            clearInterval(timer);
+
+            if (gameMode === "arcade") {
+                lives--;
+                updateLivesDisplay();
+
+                if (lives <= 0) {
+                    gameActive = false;
+                    roundStarted = false;
+                    setTimeout(() => showGameOverScreen(), 500);
+                } else {
+                    setTimeout(() => {
+                        clearButtonStyles();
+                        setRandomQuestion();
+                        document.getElementById("message").textContent = "";
+                        questionLocked = false;
+
+                        if (gameMode === "arcade" && roundStarted) {
+                            startTimer();
+                        }
+                    }, 450);
+                }
+            } else {
+                questionLocked = false;
+            }
+        }
+
+        function clearButtonStyles() {
+            const buttons = document.querySelectorAll(".button-container button");
+            buttons.forEach(button => {
+                button.classList.remove("selected", "correct", "wrong");
+            });
+        }
+
+        function updateLivesDisplay() {
+            const livesDisplay = document.getElementById("livesDisplay");
+
+            if (lives === 3) {
+                livesDisplay.textContent = "❤️ ❤️ ❤️";
+            } else if (lives === 2) {
+                livesDisplay.textContent = "❤️ ❤️";
+            } else if (lives === 1) {
+                livesDisplay.textContent = "❤️";
+            } else {
+                livesDisplay.textContent = "";
+            }
+        }
+
+        function checkRewards() {
+            const rewardMessage = document.getElementById("rewardMessage");
+            const learningStarsText = document.getElementById("learningStars");
+
+            rewardMessage.classList.remove("reward-bronze", "reward-silver", "reward-gold");
+
+            if (gameMode === "arcade") {
+                if (score >= 100 && !earnedRewards.includes("gold")) {
+                    earnedRewards.push("gold");
+                    rewardMessage.textContent = "⭐ Gold Star Reward!";
+                    rewardMessage.classList.add("reward-gold");
+                } else if (score >= 50 && !earnedRewards.includes("silver")) {
+                    earnedRewards.push("silver");
+                    rewardMessage.textContent = "⭐ Silver Star Reward!";
+                    rewardMessage.classList.add("reward-silver");
+                } else if (score >= 25 && !earnedRewards.includes("bronze")) {
+                    earnedRewards.push("bronze");
+                    rewardMessage.textContent = "⭐ Bronze Star Reward!";
+                    rewardMessage.classList.add("reward-bronze");
+                }
+            } else {
+                const starsEarnedNow = Math.floor(score / 50);
+
+                if (starsEarnedNow > learningStars) {
+                    learningStars = starsEarnedNow;
+                    learningStarsText.textContent = learningStars;
+                    rewardMessage.textContent = "⭐ You earned a star!";
+                    rewardMessage.classList.add("reward-gold");
+                }
+            }
+        }
+
+        function startGame(mode) {
+            gameMode = mode;
+            score = 0;
+            lives = 3;
+            gameActive = true;
+            earnedRewards = [];
+            questionLocked = false;
+            level = 1;
+            roundStarted = false;
+            clearInterval(timer);
+
+            updateDifficulty();
+            document.getElementById("difficultyLabel").textContent =
+                difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+
+            if (mode === "arcade") {
+                loadArcadeHighScore();
+            }
+
+            document.getElementById("menuScreen").style.display = "none";
+            document.getElementById("instructionsScreen").style.display = "none";
+            document.getElementById("gameOverScreen").style.display = "none";
+            document.getElementById("gameScreen").style.display = "block";
+
+            document.getElementById("score").textContent = score;
+
+            const rewardMessage = document.getElementById("rewardMessage");
+            const learningStarsArea = document.getElementById("learningStarsArea");
+            const learningStarsText = document.getElementById("learningStars");
+
+            rewardMessage.textContent = "";
+            rewardMessage.classList.remove("reward-bronze", "reward-silver", "reward-gold");
+
+            learningStars = 0;
+            learningStarsText.textContent = learningStars;
+            learningStarsArea.style.display = "none";
+
+            const highScoreContainer = document.getElementById("highScoreContainer");
+
+            highScoreContainer.style.display = "none";
+
+            const timerWrapper = document.getElementById("timerWrapper");
+            const startRoundArea = document.getElementById("startRoundArea");
+            const startRoundBtn = document.getElementById("startRoundBtn");
+            const timerDisplay = document.getElementById("timerDisplay");
+
+            if (gameMode === "arcade") {
+                document.getElementById("highScore").textContent = arcadeHighScore;
+                highScoreContainer.style.display = "inline";
+                learningStarsArea.style.display = "none";
+
+                timerWrapper.style.display = "block";
+                startRoundArea.style.display = "block";
+                startRoundBtn.style.display = "inline-block";
+                timerDisplay.textContent = score < 20 ? "5.0" : "3.0";
+            } else {
+                highScoreContainer.style.display = "none";
+                learningStarsArea.style.display = "block";
+
+                timerWrapper.style.display = "none";
+                startRoundArea.style.display = "none";
+            }
+
+            document.getElementById("message").textContent = "";
+            clearButtonStyles();
+
+            const livesDisplay = document.getElementById("livesDisplay");
+            const modeDisplay = document.getElementById("modeDisplay");
+
+            if (gameMode === "arcade") {
+                modeDisplay.textContent = "Arcade";
+                livesDisplay.style.display = "block";
+                updateLivesDisplay();
+            } else {
+                modeDisplay.textContent = "Learning";
+                livesDisplay.style.display = "none";
+            }
+
+            setRandomQuestion();
+
+            if (gameMode === "arcade") {
+                questionLocked = true;
+            }
+        }
+
+        function checkAnswer(color, buttonElement) {
+            if (!gameActive || questionLocked) return;
+            if (gameMode === "arcade" && !roundStarted) return;
+
+            const message = document.getElementById("message");
+
+            clearButtonStyles();
+            buttonElement.classList.add("selected");
+            questionLocked = true;
+
+            if (color === correctColor) {
+                clearInterval(timer);
+
+                score++;
+                document.getElementById("score").textContent = score;
+                checkRewards();
+
+                if (gameMode === "arcade") {
+                    if (score > arcadeHighScore) {
+                        arcadeHighScore = score;
+                        localStorage.setItem(getArcadeHighScoreKey(), arcadeHighScore);
+                        document.getElementById("highScore").textContent = arcadeHighScore;
+                    }
+                }
+
+                buttonElement.classList.add("correct");
+                message.textContent = "Correct! Great job!";
+
+                if (gameMode === "arcade") {
+                    level = Math.floor(score / 5) + 1;
+                }
+
+                if (gameMode === "arcade") {
+                    setTimeout(() => {
+                        if (!gameActive) return;
+                        clearButtonStyles();
+                        setRandomQuestion();
+                        message.textContent = "";
+                        questionLocked = false;
+
+                        if (gameMode === "arcade" && roundStarted) {
+                            startTimer();
+                        }
+                    }, 450);
+                } else {
+                    setTimeout(() => {
+                        if (!gameActive) return;
+                        clearButtonStyles();
+                        setRandomQuestion();
+                        message.textContent = "";
+                        questionLocked = false;
+                    }, 800);
+                }
+
+            } else {
+                clearInterval(timer);
+                buttonElement.classList.add("wrong");
+
+                if (gameMode === "arcade") {
+                    message.textContent = "Wrong!";
+                    questionLocked = true;
+
+                    setTimeout(() => {
+                        handleWrongAnswer();
+                    }, 450);
+                } else {
+                    message.textContent = "Try again!";
+                    questionLocked = false;
+                }
+            }
+        }
+
+        function showGameOverScreen() {
+            document.getElementById("gameScreen").style.display = "none";
+            document.getElementById("gameOverScreen").style.display = "block";
+            document.getElementById("finalScore").textContent = "Final Score: " + score;
+
+            if (gameMode === "arcade") {
+                document.getElementById("bestScoreText").textContent = "Best Score: " + arcadeHighScore;
+                document.getElementById("bestScoreText").style.display = "block";
+            } else {
+                document.getElementById("bestScoreText").style.display = "none";
+            }
+        }
+
+        function restartSameMode() {
+            startGame(gameMode);
+        }
+
+        function goToMenu() {
+            gameActive = false;
+            clearInterval(timer);
+            roundStarted = false;
+
+            document.getElementById("menuScreen").style.display = "flex";
+            document.getElementById("instructionsScreen").style.display = "none";
+            document.getElementById("gameScreen").style.display = "none";
+            document.getElementById("gameOverScreen").style.display = "none";
+            document.getElementById("message").textContent = "";
+            document.getElementById("startRoundArea").style.display = "none";
+            document.getElementById("timerWrapper").style.display = "none";
+
+            clearButtonStyles();
+        }
+
+        function showInstructions() {
+            document.getElementById("menuScreen").style.display = "none";
+            document.getElementById("instructionsScreen").style.display = "block";
+            document.getElementById("gameOverScreen").style.display = "none";
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+
+            if (score < 20) {
+                timeLeft = 5;
+            } else {
+                timeLeft = Math.max(1.5, 3 - ((score - 20) * 0.05));
+            }
+
+            document.getElementById("timerDisplay").textContent = timeLeft.toFixed(1);
+
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                document.getElementById("timerDisplay").textContent = Math.max(0, timeLeft).toFixed(1);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("message").textContent = "Time's up!";
+                    handleWrongAnswer();
+                }
+            }, 100);
+        }
+
+        function getArcadeHighScoreKey() {
+            return `arcadeHighScore_${difficulty}`;
+        }
+
+        function loadArcadeHighScore() {
+            arcadeHighScore = Number(localStorage.getItem(getArcadeHighScoreKey())) || 0;
+        }
+
+        function beginArcadeRound() {
+            if (gameMode !== "arcade" || !gameActive) return;
+
+            roundStarted = true;
+            questionLocked = false;
+            document.getElementById("message").textContent = "";
+            document.getElementById("startRoundBtn").style.display = "none";
+
+            startTimer();
+        }
+    </script>
+</body>
+
+</html>
