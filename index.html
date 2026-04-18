@@ -16,9 +16,9 @@
         }
 
         .screen {
-            padding: 30px 20px;
             min-height: 100vh;
             box-sizing: border-box;
+            padding: 20px;
         }
 
         h1 {
@@ -287,7 +287,7 @@
             padding: 10px 14px;
             border-radius: 12px;
             border: 2px solid #ccc;
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
 
         .correct {
@@ -307,29 +307,181 @@
                 transform: scale(1.08);
             }
         }
+
+        :root {
+            --primary-green: #8D6E63;
+            --secondary-green: #A1887F;
+            --accent-yellow: #D7CCC8;
+
+            --app-bg: #FBFAF8;
+            --panel-bg: #F3ECE7;
+            --page-bg: #E6DAD1;
+
+            --text-dark: #3E2723;
+            --text-muted: #6D4C41;
+
+            --border-color: #BCAAA4;
+        }
+
+        /* Updated menu screen background */
+        body {
+            background: var(--page-bg);
+        }
+
+        /* App container */
+        .app {
+            width: 320px;
+            min-height: 640px;
+            background: var(--app-bg);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* Top highlighted box */
+        .top-box {
+            background: var(--panel-bg);
+            border: 3px solid var(--border-color);
+            border-radius: 18px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .game-title {
+            margin: 0 0 6px 0;
+            font-size: 36px;
+            color: var(--text-dark);
+        }
+
+        .tagline {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Difficulty row */
+        .difficulty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            /* 👈 KEY */
+            width: 100%;
+            max-width: 260px;
+            margin: 10px auto 0 auto;
+            /* centers the whole row */
+        }
+
+        .difficulty-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-dark);
+            white-space: nowrap;
+            /* 👈 prevents breaking */
+        }
+
+        .difficulty-select {
+            width: 120px;
+            padding: 6px 10px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        /* Main buttons */
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .main-btn {
+            display: block;
+            width: 260px;
+            margin: 0 auto;
+            padding: 18px;
+            font-size: 18px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary-green);
+            color: white;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .main-btn.arcade {
+            background: var(--secondary-green);
+        }
+
+        .main-btn.howto {
+            background: var(--accent-yellow);
+            color: var(--text-dark);
+            font-size: 16px;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .icon-btn {
+            width: 52px;
+            height: 52px;
+            font-size: 22px;
+            border-radius: 50%;
+            border: none;
+            background: var(--border-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #menuScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 
 <body>
     <div id="menuScreen" class="screen">
-        <div class="menu-card">
-            <div class="title-card">
-                <h1>Kids Color Game</h1>
+        <div class="app">
+            <div class="top-box">
+                <h1 class="game-title">Kids Tap Game</h1>
+                <p class="tagline">Tap, Learn, and Play</p>
+
+                <div class="difficulty-row">
+                    <span class="difficulty-label">Select Difficulty</span>
+                    <select id="difficultySelect" class="difficulty-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
             </div>
 
-            <p class="subtitle">Tap, Learn, and Play!</p>
+            <div class="main">
+                <button class="main-btn" onclick="startGame('learning')">Learning Mode</button>
+                <button class="main-btn arcade" onclick="startGame('arcade')">Arcade Mode</button>
+                <button class="main-btn howto" onclick="showInstructions()">How to Play</button>
+            </div>
 
-            <p class="subtitle">Choose a difficulty:</p>
-            <select id="difficultySelect">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-            </select>
-
-            <div class="menu-buttons">
-                <button onclick="startGame('learning')">🎨 Learning Mode</button>
-                <button onclick="startGame('arcade')">⭐ Arcade Mode</button>
-                <button onclick="showInstructions()">❓ How to Play</button>
+            <div class="bottom-nav">
+                <button class="icon-btn">⚙️</button>
+                <button class="icon-btn">🖍️</button>
+                <button class="icon-btn">🏆</button>
             </div>
         </div>
     </div>
